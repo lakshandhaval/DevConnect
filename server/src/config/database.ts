@@ -9,11 +9,16 @@ import { SavedJob } from '../entities/SavedJob';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: env.DB_HOST,
-  port: env.DB_PORT,
-  username: env.DB_USER,
-  password: env.DB_PASSWORD,
-  database: env.DB_NAME,
+  ...(env.DATABASE_URL
+    ? { url: env.DATABASE_URL }
+    : {
+        host: env.DB_HOST,
+        port: env.DB_PORT,
+        username: env.DB_USER,
+        password: env.DB_PASSWORD,
+        database: env.DB_NAME,
+      }),
+  ssl: env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
   synchronize: env.NODE_ENV === 'development',
   logging: env.NODE_ENV === 'development',
   entities: [User, Skill, Job, Application, SavedJob],
